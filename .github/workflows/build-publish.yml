@@ -1,0 +1,26 @@
+name: Publish Docker image
+on:
+  release:
+    types: [published]
+    inputs:
+      spigot_ver:
+        description: 'spigot version'
+        required: false
+        default: '1.16.4'
+jobs:
+  push_to_registry:
+    name: Push Docker image to GitHub Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Push to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: nvdx-abtin/minecraft-spigot/minecraft-spigot
+          tags: nvdx-abtin/minecraft-spigot:latest
+          build-args: |
+            SPIGOT_VER=${{ github.event.inputs.spigot_ver }}
